@@ -1,6 +1,7 @@
 package com.doctor.appointment.service;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,17 @@ public class AppointmentService {
     }
 	// ---------------- SLOT VALIDATION ----------------
 	public String validateAppointment(String doctorEmail, String date, String time) {
-	    LocalDate selectedDate = LocalDate.parse(date);
-	    LocalDate today = LocalDate.now();
-	    LocalTime requestedTime = LocalTime.parse(time);
-	    LocalTime currentTime = LocalTime.now();
-	    LocalTime start = LocalTime.of(10, 0);
+        //On OpenShift, container time = UTC, not your local Indian time.
+        ZoneId zone = ZoneId.of("Asia/Kolkata");
+        LocalDate selectedDate = LocalDate.parse(date);
+        //LocalDate today = LocalDate.now();
+        //LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+        LocalDate today = LocalDate.now(zone);
+        LocalTime requestedTime = LocalTime.parse(time);
+	    // LocalTime currentTime = LocalTime.now();
+        //LocalTime currentTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
+        LocalTime currentTime = LocalTime.now(zone);
+        LocalTime start = LocalTime.of(10, 0);
 	    LocalTime end = LocalTime.of(16, 0);
 	    // ❌ 1. Past Date
 	    if (selectedDate.isBefore(today)) {
@@ -44,16 +51,22 @@ public class AppointmentService {
 	        return "BOOKING_CLOSED_TODAY";
 	    }
 	    // ❌ 4. Time Range Validation (10AM – 4PM)
-	    if (requestedTime.isBefore(start) || requestedTime.isAfter(end)) {
-	        return "INVALID_TIME";
-	    }
+        if (requestedTime.isBefore(start) || !requestedTime.isBefore(end)) {
+            return "INVALID_TIME";
+        }
 	    // ❌ 5. Slot Availability (10 min buffer)
 	    List<Appointment> existing = appointmentRepository.findByDoctorEmailAndDate(doctorEmail, date);
 	    for (Appointment a : existing) {
-	        LocalTime bookedTime = LocalTime.parse(a.getTime());
-	        if (!requestedTime.isBefore(bookedTime.minusMinutes(10)) && !requestedTime.isAfter(bookedTime.plusMinutes(10))) {
-	            return "SLOT_NOT_AVAILABLE";
-	        }
+            if ("Cancelled by Patient".equals(a.getStatus())) {
+                continue; // ignore cancelled slots
+            }
+            LocalTime bookedTime = LocalTime.parse(a.getTime());
+            LocalTime bookedStart = bookedTime.minusMinutes(10);
+            LocalTime bookedEnd = bookedTime.plusMinutes(10);
+            // Proper overlap check
+            if (!requestedTime.isBefore(bookedStart) && !requestedTime.isAfter(bookedEnd)) {
+                return "SLOT_NOT_AVAILABLE";
+            }
 	    }
 	    return "VALID";
 	}
