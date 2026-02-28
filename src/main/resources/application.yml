@@ -5,3 +5,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health
