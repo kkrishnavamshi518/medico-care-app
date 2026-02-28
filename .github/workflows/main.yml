@@ -10,23 +10,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1 — Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Step 2 — Install OpenShift CLI
       - name: Install OpenShift CLI
         run: |
           curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz
           tar -xzf oc.tar.gz
           sudo mv oc /usr/local/bin/
 
+      # Step 3 — Login to OpenShift
       - name: Login to OpenShift
         run: |
           oc login ${{ secrets.OPENSHIFT_SERVER }} \
-            --token=${{ secrets.OPENSHIFT_TOKEN }} \
-            --insecure-skip-tls-verify=true
+          --token=${{ secrets.OPENSHIFT_TOKEN }} \
+          --insecure-skip-tls-verify=true
 
+      # Step 4 — Select Project Namespace
       - name: Select Project
-        run: oc project ${{ secrets.OPENSHIFT_NAMESPACE }}
+        run: |
+          oc project ${{ secrets.OPENSHIFT_NAMESPACE }}
 
+      # Step 5 — Trigger Build
       - name: Trigger S2I Build
-        run: oc start-build medico-care-app --follow
+        run: |
+          oc start-build medico-care-app --wait
+
+      # Step 6 — Restart Deployment (Pull New Image)
+      - name: Restart Deployment
+        run: |
+          oc rollout restart deployment medico-care-app
+
+      # Step 7 — Verify Deployment
+      - name: Check Pods
+        run: |
+          oc get pods
