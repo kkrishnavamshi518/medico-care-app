@@ -6,7 +6,6 @@
       background: url('../img/Backg.jpeg') center / cover no-repeat fixed;
       color: #fff;
     }
-    
     body::before {
       content: "";
       position: fixed;
@@ -14,18 +13,15 @@
       background: rgba(0, 0, 0, 0.65);
       z-index: -1;
     }
-
     .navbar-nav .nav-link {
       font-weight: 600;
       color: #f8fafc !important;
     }
-
     .navbar-brand {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .navbar-brand img {
       height: 36px;
       width: auto;
@@ -35,7 +31,6 @@
       padding: 4px;
       border-radius: 6px;
     }
-
     .brand-text {
       font-size: 2rem;
       font-weight: 700;
@@ -44,15 +39,28 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(10px);
-      border-radius: 1rem;
-      color: #111;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    .form-label {
+        font-size: 0.85rem;
     }
-
-    .glass-card label {
-      color: #0f172a;
+    .form-control {
+        font-size: 0.9rem;
+    }
+    .btn {
+        font-size: 0.9rem;
+    }
+    @media (min-width: 992px) {
+        .form-label {
+            font-size: 1rem;
+        }
+        .form-control {
+            font-size: 1.05rem;
+            padding: 0.6rem 0.75rem;
+        }
+        .btn {
+            font-size: 1.05rem;
+            padding: 0.6rem;
+        }
+        .text-center.small {
+            font-size: 0.95rem;
+        }
     }
