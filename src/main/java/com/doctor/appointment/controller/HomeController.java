@@ -24,8 +24,7 @@ public class HomeController {
     @PostMapping("/contact")
     public String saveContact(@ModelAttribute Contact contact, RedirectAttributes redirectAttributes) {
         contactRepository.save(contact);
-        redirectAttributes.addFlashAttribute("successMessage",
-                "Thank you for contacting Medico! We will respond soon.");
+        redirectAttributes.addFlashAttribute("successMessage", "Thank you for contacting Medico! We will respond soon.");
         return "redirect:/contact";
     }
 }

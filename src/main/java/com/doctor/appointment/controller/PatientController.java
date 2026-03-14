@@ -1,5 +1,4 @@
 package com.doctor.appointment.controller;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,15 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.doctor.appointment.entities.Appointment;
-import com.doctor.appointment.entities.Doctor;
 import com.doctor.appointment.entities.Patient;
 import com.doctor.appointment.service.AppointmentService;
-import com.doctor.appointment.service.DoctorService;
 import com.doctor.appointment.service.PatientService;
 @Controller
 @RequiredArgsConstructor
 public class PatientController {
-    private final DoctorService doctorService;
     private final PatientService patientService;
     private final AppointmentService appointmentService;
     // ---------------- LOGIN PAGE ----------------
@@ -40,8 +36,6 @@ public class PatientController {
     // ---------------- PATIENT DASHBOARD ----------------
     @GetMapping("/patient/home")
     public String dashboard(Model model) {
-        List<Doctor> doctors = doctorService.getAllDoctors();
-        model.addAttribute("doctors", doctors);
         return "patient-dashboard";
     }
     // ---------------- BOOK APPOINTMENT PAGE ----------------
